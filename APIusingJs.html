@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>Fetch example</title>
+        
+        
+    </head>
+    
+        <style type="text/css" media="all">
+        
+            h2{
+                text-align: center;
+            }
+            #container{
+                
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-around;
+                
+            }
+            .item{
+                margin: 5px;
+                padding: 0;
+                
+                width: 22%;
+                border: solid 1px black;
+                border-radius: 5px;
+                }
+                .item h3{
+                    text-align: center;
+                }
+                #load{
+                    
+                    margin: 20px  auto;
+                    padding: 10px;
+                    background-color: yellow;
+                    border-radius: 5px;
+                }
+                .button{
+                    display: flex;
+                    justify-content: center;
+                }
+        </style>
+    <body>
+    <h2>Pokemons</h2>
+    <div id="container">
+    
+            
+     </div>
+     <div class="button">
+         <button id="load" >Load more</button>
+     </div>   
+
+
+<script type="text/javascript" charset="utf-8">
+          
+let number
+let offset=number*20
+
+function firstLoad(){
+number=0;
+load();
+  }
+  
+let loadMorePokemons=document.getElementById('load')
+loadMorePokemons.addEventListener('click', loadMore)
+
+function loadMore(){
+    number++;
+    load();
+}
+
+function load() {
+  
+   let offset=number*20  
+   console.log(offset)
+   console.log(number)
+   
+   let url=`https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=20`;
+   console.log(url)
+  
+   fetch(url, {method: 'GET'})
+  .then(response => response.json())
+  .then(json => {
+   //   console.log(json)
+     
+     const pokemons=json.results
+     pokemons.forEach(pokemon=>{
+                   
+          fetch(pokemon.url)
+          .then(response=>response.json())
+          .then(pokemon=>   {
+         
+         var container=document.getElementById('container')
+         var myItem=document.createElement('div')
+         myItem.classList.add('item')
+         container.appendChild(myItem);
+         var myName=document.createElement('h3')
+         myName.textContent=pokemon.name
+         myItem.appendChild(myName)
+         var myImage=document.createElement('div')
+         myImage.innerHTML=`
+         <img  src='${pokemon.sprites.front_default}' width="100%" />
+         `
+         myItem.appendChild(myImage);
+                  
+          }).catch(error=>{
+              console.error(error)
+            })
+     })
+     
+  }).catch(error=>{
+              console.error(error)
+          })
+  }
+  
+  firstLoad()
+  </script>
+  
+  </body>
+  </html>
